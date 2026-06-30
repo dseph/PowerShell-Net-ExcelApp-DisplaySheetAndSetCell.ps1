@@ -11,6 +11,7 @@ $excel.Visible = $true
 
 $workbook = $null
 $worksheet = $null
+$hadError = $false
 
 try {
     if ($WorkbookPath) {
@@ -34,7 +35,13 @@ try {
         throw "Worksheet '$WorksheetName' was not found in the workbook."
     }
 
-    $worksheet.Activate() | Out-Null
+    try {
+        $worksheet.Activate() | Out-Null
+    }
+    catch {
+        throw "Failed to activate worksheet '$WorksheetName'."
+    }
+
     try {
         $worksheet.Range($CellAddress).Value2 = $Text
     }
@@ -43,17 +50,20 @@ try {
     }
 }
 catch {
-    if ($workbook) {
-        $workbook.Close($false)
-    }
-
-    if ($excel) {
-        $excel.Quit()
-    }
-
+    $hadError = $true
     throw
 }
 finally {
+    if ($hadError) {
+        if ($workbook) {
+            $workbook.Close($false)
+        }
+
+        if ($excel) {
+            $excel.Quit()
+        }
+    }
+
     if ($worksheet) {
         [void][System.Runtime.InteropServices.Marshal]::ReleaseComObject($worksheet)
     }
