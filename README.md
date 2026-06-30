@@ -8,3 +8,5 @@ Use PowerShell with .Net and Excel Object model to display a sheet and set a cel
 ./PowerShell-Net-ExcelApp-DisplaySheetAndSetCell.ps1 -Text "Hello from PowerShell"
 ./PowerShell-Net-ExcelApp-DisplaySheetAndSetCell.ps1 -WorkbookPath ".\\Book1.xlsx" -WorksheetName "Sheet1" -CellAddress "B2" -Text "Updated value"
 ```
+
+On success, Excel is left open with the target worksheet displayed so you can see the updated cell immediately.
