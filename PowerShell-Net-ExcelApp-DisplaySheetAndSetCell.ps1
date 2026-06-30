@@ -14,7 +14,13 @@ $worksheet = $null
 
 try {
     if ($WorkbookPath) {
-        $resolvedPath = (Resolve-Path -Path $WorkbookPath).Path
+        try {
+            $resolvedPath = (Resolve-Path -Path $WorkbookPath -ErrorAction Stop).Path
+        }
+        catch {
+            throw "Workbook file not found at path: $WorkbookPath"
+        }
+
         $workbook = $excel.Workbooks.Open($resolvedPath)
     }
     else {
@@ -37,19 +43,26 @@ try {
     }
 }
 catch {
+    if ($workbook) {
+        $workbook.Close($false)
+    }
+
+    if ($excel) {
+        $excel.Quit()
+    }
+
+    throw
+}
+finally {
     if ($worksheet) {
         [void][System.Runtime.InteropServices.Marshal]::ReleaseComObject($worksheet)
     }
 
     if ($workbook) {
-        $workbook.Close($false)
         [void][System.Runtime.InteropServices.Marshal]::ReleaseComObject($workbook)
     }
 
     if ($excel) {
-        $excel.Quit()
         [void][System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel)
     }
-
-    throw
 }
