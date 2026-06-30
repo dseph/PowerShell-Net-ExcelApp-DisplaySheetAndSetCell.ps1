@@ -7,7 +7,6 @@ param(
 )
 
 $excel = New-Object -ComObject Excel.Application
-$excel.Visible = $true
 
 $workbook = $null
 $worksheet = $null
@@ -32,21 +31,23 @@ try {
         $worksheet = $workbook.Worksheets.Item($WorksheetName)
     }
     catch {
-        throw "Worksheet '$WorksheetName' was not found in the workbook."
+        throw "Worksheet '$WorksheetName' was not found in the workbook. $($_.Exception.Message)"
     }
+
+    $excel.Visible = $true
 
     try {
         $worksheet.Activate() | Out-Null
     }
     catch {
-        throw "Failed to activate worksheet '$WorksheetName'."
+        throw "Failed to activate worksheet '$WorksheetName'. $($_.Exception.Message)"
     }
 
     try {
         $worksheet.Range($CellAddress).Value2 = $Text
     }
     catch {
-        throw "Cell address '$CellAddress' is invalid."
+        throw "Failed to set value for cell '$CellAddress'. $($_.Exception.Message)"
     }
 }
 catch {
